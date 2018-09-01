@@ -1,3 +1,7 @@
+"""
+Quickly gets screenshot without opening terminal.
+"""
+
 import pyscreenshot as ImageGrab
 import os
 import time
