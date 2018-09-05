@@ -27,6 +27,7 @@ pyautogui.FAILSAFE = True
 emoji_loc = (368,1052)
 message_box_loc = (834, 1048)
 response_loc = (379,972)
+offline_loc = (1285, 1041)
 
 # Emoticons :), requires pyperclip (HACK)
 happy_bot = "┌|^ω^|┘"
@@ -37,24 +38,31 @@ shrug_bot = r"¯\_|ツ|_/¯"
 with open ("messages.txt", "r") as myfile:
     data=myfile.read().split("\n")
 
+hour_start = 0
+hour_end = 0
 gif_search = ""
 gif_messages = []
 repeating_messages = []
 option_number = 0
 for i in data:
-    if i == "# GIF Search Term":
+    if i == "# Start and End hours":
         option_number = 1
-    elif i == "# GIF Messages":
+    elif i == "# GIF Search Term":
         option_number = 2
-    elif i == "# Repeating Messages":
+    elif i == "# GIF Messages":
         option_number = 3
+    elif i == "# Repeating Messages":
+        option_number = 4
     
     elif i:
         if option_number == 1:
+            hour_start = int(i[:2])
+            hour_end = int(i[3:5])
+        if option_number == 2:
             gif_search = i
-        elif option_number == 2:
-            gif_messages.append(i)
         elif option_number == 3:
+            gif_messages.append(i)
+        elif option_number == 4:
             repeating_messages.append(i)
 
 def click_on_message_box():
@@ -64,24 +72,34 @@ def click_on_message_box():
 def click_on_emoji():
     pyautogui.click(emoji_loc)
 
+def click_offline():
+    pyautogui.click(offline_loc)
+
 def click_on_gif(write=True):
     click_on_emoji()
     pyautogui.typewrite(gif_search, interval=0.15)
-    pyautogui.typewrite(["down"] * 4, interval=0.1)
+    pyautogui.typewrite(["down"] * 7, interval=0.1)
     pyautogui.typewrite(["enter"])
 
-#while datetime.datetime.now().hour != 
+print("Waiting for time...")
+while not (hour_start <= datetime.datetime.now().hour < hour_end):
+    time.sleep(1800)
+print("The time has come.")
+print("Sending initial message.")
 
 click_on_message_box()
 pyautogui.typewrite("Yo", interval=0.5)
 pyautogui.typewrite(["enter"], interval=0.1)
+click_offline()
 
+print("Waiting for response...")
 check_response = pyautogui.pixel(379,972)
-
 while check_response != (255, 255, 255):
     time.sleep(30)
     check_response = pyautogui.pixel(379,972)
+print("Response received.")
 
+print("Sending GIF and GIF message(s)...")
 click_on_gif()
 for i, gif_message in enumerate(gif_messages):
     pyautogui.typewrite(gif_message, interval=0.15)
@@ -90,17 +108,24 @@ for i, gif_message in enumerate(gif_messages):
         pyperclip.copy(happy_bot)
         pyautogui.hotkey('ctrl', 'v')
     pyautogui.typewrite(["enter"])
+click_offline()
+print("Message sent")
 
 # If they send message:
-while True:
+print("Waiting for response...")
+while hour_start <= datetime.datetime.now().hour < hour_end:
     if pyautogui.pixel(response_loc[0], response_loc[1]) == (255, 255, 255):
+        print("Redundant response received...")
+        print("Sending repeating message(s)...")
+        click_on_message_box()
         for i, repeating_message in enumerate(repeating_messages):
             pyautogui.typewrite(repeating_message, interval=0.2)
             if i == 1:
-                print("success")
                 pyperclip.copy(shrug_bot)
                 pyautogui.hotkey('ctrl', 'v')
             pyautogui.typewrite(["enter"])
+        click_offline()
+        print("Message sent.")
     else:
         time.sleep(30)
 
