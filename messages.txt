@@ -5,7 +5,7 @@
 sleep
 
 # GIF Messages
-I'm a bot made by my currently sleeping human overlord Denizhan just for you, Sinem, in order to advise you to sleep.
+I'm a bot made by my currently sleeping human overlord Denizhan just for you, XXX, in order to advise you to sleep.
 Nighty night!
 [Lastest no response (sleeping_beauty = TRUE): 2018.09.02]
 
